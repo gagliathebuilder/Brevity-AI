@@ -1,13 +1,23 @@
 # BrevityIQ Backend
 
-BrevityIQ is a tool that helps users quickly digest long-form content by synthesizing articles, videos, and podcasts into concise, shareable summaries.
+BrevityIQ is an AI-powered tool that helps users quickly digest long-form content by synthesizing articles, videos, and podcasts into concise, shareable summaries.
 
 ## Features
 
-- User authentication using Supabase
-- URL-based content summarization using GPT-4 Turbo
-- Editable and shareable summaries with ownership disclaimer
-- Robust error handling and basic analytics
+- 🔐 User authentication using Supabase
+- 🤖 URL-based content summarization using GPT-4 Turbo
+- ✏️ Editable and shareable summaries
+- 📊 Basic analytics and usage tracking
+- 🔒 Secure API endpoints with rate limiting
+- 🛡️ Robust error handling
+
+## Tech Stack
+
+- Node.js
+- Express.js
+- Supabase (Authentication & Database)
+- OpenAI GPT-4 Turbo
+- RESTful API Architecture
 
 ## Prerequisites
 
@@ -20,8 +30,8 @@ BrevityIQ is a tool that helps users quickly digest long-form content by synthes
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd brevityiq-backend
+   git clone https://github.com/gagliathebuilder/Brevity-AI.git
+   cd Brevity-AI
    ```
 
 2. Install dependencies:
@@ -80,9 +90,24 @@ BrevityIQ is a tool that helps users quickly digest long-form content by synthes
 
 ## Contributing
 
-1. Create a feature branch
-2. Make your changes
-3. Submit a pull request
+1. Create a feature branch from `develop`:
+   ```bash
+   git checkout develop
+   git checkout -b feature/your-feature-name
+   ```
+
+2. Make your changes and commit them:
+   ```bash
+   git add .
+   git commit -m "Description of your changes"
+   ```
+
+3. Push your branch and create a pull request:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+4. Submit a pull request to the `develop` branch
 
 ## License
 
