@@ -251,7 +251,10 @@
                 if (data.error) {
                     throw new Error(data.message || data.error);
                 }
-                document.getElementById('summaryContent').innerHTML = data.summary.replace(/\n/g, '<br>');
+                
+                // Display the analysis (not summary)
+                const analysis = data.analysis || data.content || JSON.stringify(data);
+                document.getElementById('summaryContent').innerHTML = analysis.replace(/\n/g, '<br>');
                 document.querySelector('.result').style.display = 'block';
             })
             .catch(error => {

@@ -32,7 +32,13 @@ router.post('/', async (req, res) => {
       title: summary.title
     });
 
-    res.status(201).json(summary);
+    // Make sure we provide the summary property that the frontend expects
+    const response = {
+      ...summary,
+      summary: summary.analysis // Add summary property for frontend compatibility
+    };
+
+    res.status(201).json(response);
   } catch (error) {
     console.error('Error in summary creation:', {
       name: error.name,
@@ -42,16 +48,39 @@ router.post('/', async (req, res) => {
 
     // Check if it's a known error type
     if (error.message.includes('No content provided')) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ 
+        error: 'No content could be extracted', 
+        message: error.message 
+      });
     }
 
-    if (error.message.includes('OpenAI')) {
-      return res.status(503).json({ error: 'Summary service temporarily unavailable' });
+    if (error.message.includes('Failed to retrieve content')) {
+      return res.status(422).json({ 
+        error: 'Content retrieval failed', 
+        message: error.message 
+      });
+    }
+
+    if (error.message.includes('OpenAI') || error.message.includes('AI analysis failed')) {
+      return res.status(503).json({ 
+        error: 'Analysis service temporarily unavailable',
+        message: error.message
+      });
+    }
+    
+    // If the error has a response property, it might be an API error
+    if (error.response) {
+      const statusCode = error.response.status || 500;
+      return res.status(statusCode).json({ 
+        error: `External API error (${statusCode})`,
+        message: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.response.data : undefined
+      });
     }
 
     res.status(500).json({ 
       error: 'Failed to create summary',
-      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: process.env.NODE_ENV === 'development' ? error.message : 'An unexpected error occurred'
     });
   }
 });
