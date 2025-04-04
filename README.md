@@ -1,113 +1,99 @@
 # BrevityIQ Backend
 
-BrevityIQ is an AI-powered tool that helps users quickly digest long-form content by synthesizing articles, videos, and podcasts into concise, shareable summaries.
+A Node.js backend service for BrevityIQ, a tool that helps users quickly digest long-form content by generating concise, shareable summaries.
 
 ## Features
 
-- 🔐 User authentication using Supabase
-- 🤖 URL-based content summarization using GPT-4 Turbo
-- ✏️ Editable and shareable summaries
-- 📊 Basic analytics and usage tracking
-- 🔒 Secure API endpoints with rate limiting
-- 🛡️ Robust error handling
-
-## Tech Stack
-
-- Node.js
-- Express.js
-- Supabase (Authentication & Database)
-- OpenAI GPT-4 Turbo
-- RESTful API Architecture
+- User authentication using Supabase
+- URL-based content summarization using GPT-4 Turbo
+- Editable and shareable summaries
+- Robust error handling and rate limiting
+- Secure API endpoints
 
 ## Prerequisites
 
 - Node.js (v14 or higher)
 - npm (v6 or higher)
-- Supabase account and project
+- Supabase account
 - OpenAI API key
 
-## Setup
+## Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/gagliathebuilder/Brevity-AI.git
-   cd Brevity-AI
-   ```
+```bash
+git clone https://github.com/yourusername/brevityiq-backend.git
+cd brevityiq-backend
+```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. Create a `.env` file in the root directory and add your credentials:
-   ```
-   PORT=3000
-   NODE_ENV=development
-   SUPABASE_URL=your_supabase_project_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   OPENAI_API_KEY=your_openai_api_key
-   ```
+3. Create a `.env` file in the root directory with the following variables:
+```
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+OPENAI_API_KEY=your_openai_api_key
+PORT=3000
+NODE_ENV=development
+```
 
-4. Set up your Supabase database:
-   - Create a new project in Supabase
-   - Create a `summaries` table with the following columns:
-     - `id` (uuid, primary key)
-     - `user_id` (uuid, foreign key to auth.users)
-     - `url` (text)
-     - `content` (text)
-     - `summary` (text)
-     - `created_at` (timestamp with time zone)
-     - `updated_at` (timestamp with time zone)
+## Running the Application
 
-5. Start the development server:
-   ```bash
-   npm run dev
-   ```
+Development mode:
+```bash
+npm run dev
+```
+
+Production mode:
+```bash
+npm start
+```
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - Login user
+- `POST /auth/logout` - Logout user
 
-### Summarization
-- `POST /api/summarize` - Generate a summary from a URL
-- `GET /api/summarize` - Get user's summaries
+### Health Check
+- `GET /health` - Check server status
 
-### Sharing
-- `GET /api/share/:id` - Get a specific summary
-- `PUT /api/share/:id` - Update a summary
-- `DELETE /api/share/:id` - Delete a summary
+## Project Structure
 
-## Development
+```
+src/
+├── config/         # Configuration files
+├── controllers/    # Route controllers
+├── middleware/     # Custom middleware
+├── routes/         # API routes
+├── services/       # Business logic
+└── utils/          # Utility functions
+```
 
-- The project uses Express.js for the server
-- Supabase for authentication and data storage
-- OpenAI's GPT-4 Turbo for content summarization
-- Environment variables for configuration
-- Error handling middleware for consistent error responses
+## Error Handling
+
+The application includes comprehensive error handling:
+- Input validation
+- Authentication errors
+- Rate limiting
+- Server errors
+
+## Security
+
+- Helmet.js for security headers
+- Rate limiting to prevent abuse
+- Environment variable protection
+- Secure authentication with Supabase
 
 ## Contributing
 
-1. Create a feature branch from `develop`:
-   ```bash
-   git checkout develop
-   git checkout -b feature/your-feature-name
-   ```
-
-2. Make your changes and commit them:
-   ```bash
-   git add .
-   git commit -m "Description of your changes"
-   ```
-
-3. Push your branch and create a pull request:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-4. Submit a pull request to the `develop` branch
+1. Create a feature branch
+2. Make your changes
+3. Submit a pull request
 
 ## License
 
