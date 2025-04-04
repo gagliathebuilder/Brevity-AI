@@ -3,161 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrevityIQ - Content Summarization</title>
+    <title>BrevityIQ - Content Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #06b6d4;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #f9fafb;
+            --bg-card: #ffffff;
+            --error: #ef4444;
+            --success: #10b981;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
         }
+
         .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
-        h1 {
-            color: #333;
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        header {
             text-align: center;
             margin-bottom: 30px;
         }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            background-color: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        h1 {
+            color: var(--text);
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
+            color: var(--text);
         }
+
         input[type="text"],
         textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             font-size: 16px;
+            transition: var(--transition);
         }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
         textarea {
             min-height: 200px;
             resize: vertical;
         }
-        .input-group {
+
+        .input-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
         }
-        .input-group label {
-            display: inline-flex;
-            align-items: center;
-            margin-right: 20px;
+
+        .input-tab {
+            padding: 12px 16px;
             cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
         }
-        .input-group input[type="radio"] {
-            margin-right: 8px;
+
+        .input-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
+
+        .input-content {
+            display: none;
+        }
+
+        .input-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
         button {
-            background-color: #007bff;
+            background-color: var(--primary);
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: 4px;
+            border-radius: var(--radius);
             cursor: pointer;
             font-size: 16px;
+            font-weight: 500;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
         }
+
         button:hover {
-            background-color: #0056b3;
+            background-color: var(--primary-dark);
         }
+
         button:disabled {
-            background-color: #ccc;
+            background-color: var(--text-light);
             cursor: not-allowed;
         }
-        .result {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            display: none;
+
+        button i {
+            margin-right: 8px;
         }
-        .result h2 {
-            margin-top: 0;
-            color: #333;
-        }
+
         .loading {
             text-align: center;
             display: none;
+            margin: 40px 0;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(79, 70, 229, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .progress-steps {
+            display: flex;
+            margin: 20px 0;
+            justify-content: space-between;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+
+        .progress-step.active {
+            opacity: 1;
+        }
+
+        .progress-step-number {
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            margin-bottom: 8px;
+            z-index: 2;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: calc(-50% + 15px);
+            width: 100%;
+            height: 2px;
+            background-color: var(--border);
+            z-index: 1;
+        }
+
+        .progress-step.completed:not(:last-child)::after {
+            background-color: var(--primary);
+        }
+
+        .progress-step-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .error {
+            color: var(--error);
+            margin-top: 20px;
+            display: none;
+            padding: 16px;
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            border-radius: var(--radius);
+        }
+
+        .result {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .result-tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .result-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .result-content {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .result-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: flex-end;
             margin-top: 20px;
         }
-        .error {
-            color: #dc3545;
-            margin-top: 10px;
-            display: none;
-            padding: 10px;
-            background-color: #fff3f3;
-            border: 1px solid #dc3545;
-            border-radius: 4px;
+
+        .btn-action {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            width: auto;
+            margin-left: 10px;
+            transition: var(--transition);
         }
+
+        .btn-action:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+
         #debug {
             margin-top: 20px;
-            padding: 10px;
+            padding: 16px;
             background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             font-family: monospace;
             font-size: 12px;
             display: none;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
         }
-        #urlInput, #contentInput {
-            display: none;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        #urlInput.active, #contentInput.active {
-            display: block;
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .progress-step-label {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>BrevityIQ - Content Summarization</h1>
-        
-        <form id="summaryForm">
-            <div class="form-group">
-                <label for="title">Title (optional)</label>
-                <input type="text" id="title" name="title" placeholder="Enter a title for your content">
-            </div>
-
-            <div class="input-group">
-                <label>
-                    <input type="radio" name="inputType" value="url" checked> URL
-                </label>
-                <label>
-                    <input type="radio" name="inputType" value="content"> Direct Content
-                </label>
-            </div>
+        <div class="card">
+            <header>
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-bolt"></i></div>
+                    <h1>BrevityIQ</h1>
+                </div>
+                <p class="subtitle">AI-powered content analysis and thematic summarization</p>
+            </header>
             
-            <div id="urlInput" class="form-group active">
-                <label for="url">URL to Summarize</label>
-                <input type="text" id="url" name="url" placeholder="Enter URL (e.g., article, YouTube video)" required>
-            </div>
+            <form id="summaryForm">
+                <div class="form-group">
+                    <label for="title">Title (optional)</label>
+                    <input type="text" id="title" name="title" placeholder="Enter a title for your content">
+                </div>
 
-            <div id="contentInput" class="form-group">
-                <label for="content">Content to Summarize</label>
-                <textarea id="content" name="content" placeholder="Paste your content here..."></textarea>
-            </div>
+                <div class="input-tabs">
+                    <div class="input-tab active" data-tab="url">
+                        <i class="fas fa-link"></i> URL
+                    </div>
+                    <div class="input-tab" data-tab="content">
+                        <i class="fas fa-file-alt"></i> Direct Content
+                    </div>
+                </div>
+                
+                <div id="urlInput" class="input-content active">
+                    <div class="form-group">
+                        <label for="url">URL to Analyze</label>
+                        <input type="text" id="url" name="url" placeholder="Enter URL (article, YouTube video, podcast)" required>
+                    </div>
+                </div>
+
+                <div id="contentInput" class="input-content">
+                    <div class="form-group">
+                        <label for="content">Content to Analyze</label>
+                        <textarea id="content" name="content" placeholder="Paste your content here..."></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" id="submitBtn">
+                    <i class="fas fa-magic"></i> Generate Analysis
+                </button>
+            </form>
+        </div>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p class="loading-text" id="loadingText">Analyzing content...</p>
             
-            <button type="submit" id="submitBtn">Generate Summary</button>
-        </form>
-
-        <div class="loading">
-            <p>Generating summary...</p>
+            <div class="progress-steps">
+                <div class="progress-step active" id="step1">
+                    <div class="progress-step-number">1</div>
+                    <div class="progress-step-label">Fetching content</div>
+                </div>
+                <div class="progress-step" id="step2">
+                    <div class="progress-step-number">2</div>
+                    <div class="progress-step-label">Processing</div>
+                </div>
+                <div class="progress-step" id="step3">
+                    <div class="progress-step-number">3</div>
+                    <div class="progress-step-label">Generating analysis</div>
+                </div>
+                <div class="progress-step" id="step4">
+                    <div class="progress-step-number">4</div>
+                    <div class="progress-step-label">Creating outputs</div>
+                </div>
+            </div>
         </div>
 
         <div class="error">
-            <p id="errorText">An error occurred while generating the summary. Please try again.</p>
+            <p id="errorText">An error occurred while generating the analysis. Please try again.</p>
         </div>
 
-        <div class="result">
-            <h2>Summary</h2>
-            <div id="summaryContent"></div>
+        <div class="card result">
+            <div class="result-tabs">
+                <div class="result-tab active" data-result="analysis">
+                    <i class="fas fa-chart-pie"></i> Thematic Analysis
+                </div>
+                <div class="result-tab" data-result="email">
+                    <i class="fas fa-envelope"></i> Email Draft
+                </div>
+                <div class="result-tab" data-result="social">
+                    <i class="fas fa-share-alt"></i> Social Share
+                </div>
+            </div>
+            
+            <div id="analysisContent" class="result-content active"></div>
+            <div id="emailContent" class="result-content"></div>
+            <div id="socialContent" class="result-content"></div>
+            
+            <div class="result-actions">
+                <button class="btn-action" id="copyBtn">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="btn-action" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
         </div>
 
         <div id="debug"></div>
@@ -176,26 +478,66 @@
             console.log(message, data);
         };
 
-        // Handle input type switching
-        document.querySelectorAll('input[name="inputType"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                const urlInput = document.getElementById('urlInput');
-                const contentInput = document.getElementById('contentInput');
-                const url = document.getElementById('url');
-                const content = document.getElementById('content');
-
-                if (e.target.value === 'url') {
-                    urlInput.classList.add('active');
-                    contentInput.classList.remove('active');
-                    url.required = true;
-                    content.required = false;
-                } else {
-                    urlInput.classList.remove('active');
-                    contentInput.classList.add('active');
-                    url.required = false;
-                    content.required = true;
-                }
+        // Handle input tab switching
+        document.querySelectorAll('.input-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Toggle active tab
+                document.querySelectorAll('.input-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Toggle active content
+                const tabType = tab.getAttribute('data-tab');
+                document.querySelectorAll('.input-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(tabType + 'Input').classList.add('active');
+                
+                // Update required fields
+                document.getElementById('url').required = tabType === 'url';
+                document.getElementById('content').required = tabType === 'content';
             });
+        });
+        
+        // Handle result tab switching
+        document.querySelectorAll('.result-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Toggle active tab
+                document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Toggle active content
+                const resultType = tab.getAttribute('data-result');
+                document.querySelectorAll('.result-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(resultType + 'Content').classList.add('active');
+            });
+        });
+        
+        // Copy button functionality
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const activeResultTab = document.querySelector('.result-tab.active').getAttribute('data-result');
+            const contentToCopy = document.getElementById(activeResultTab + 'Content').innerText;
+            
+            navigator.clipboard.writeText(contentToCopy).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            });
+        });
+        
+        // Download button functionality
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            const activeResultTab = document.querySelector('.result-tab.active').getAttribute('data-result');
+            const contentToDownload = document.getElementById(activeResultTab + 'Content').innerText;
+            const title = document.title;
+            const filename = `brevityiq-${activeResultTab}-${Date.now()}.txt`;
+            
+            const blob = new Blob([contentToDownload], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
         });
 
         // Test server connection on page load
@@ -209,11 +551,37 @@
                 document.querySelector('.error').style.display = 'block';
                 document.getElementById('errorText').textContent = 'Cannot connect to server. Please try again later.';
             });
+            
+        // Simulate progress in loading steps
+        function updateProgress(step) {
+            const steps = document.querySelectorAll('.progress-step');
+            const loadingText = document.getElementById('loadingText');
+            
+            steps.forEach((s, index) => {
+                if (index < step) {
+                    s.classList.add('active', 'completed');
+                } else if (index === step) {
+                    s.classList.add('active');
+                    s.classList.remove('completed');
+                } else {
+                    s.classList.remove('active', 'completed');
+                }
+            });
+            
+            const loadingMessages = [
+                'Fetching content...',
+                'Processing content...',
+                'Generating thematic analysis...',
+                'Creating outputs...'
+            ];
+            
+            loadingText.textContent = loadingMessages[step];
+        }
 
         function handleSubmit(event) {
             event.preventDefault();
             const form = event.target;
-            const inputType = document.querySelector('input[name="inputType"]:checked').value;
+            const inputType = document.querySelector('.input-tab.active').getAttribute('data-tab');
             const urlInput = document.getElementById('url');
             const contentInput = document.getElementById('content');
             const titleInput = document.getElementById('title');
@@ -230,11 +598,24 @@
 
             // Show loading state
             document.getElementById('submitBtn').disabled = true;
-            document.querySelector('.loading').style.display = 'block';
+            document.getElementById('loadingIndicator').style.display = 'block';
             document.querySelector('.error').style.display = 'none';
             document.querySelector('.result').style.display = 'none';
-            document.getElementById('summaryContent').innerHTML = 'Generating summary...';
-            document.getElementById('debug').innerHTML = '';
+            
+            // Reset progress steps and start animation
+            updateProgress(0);
+            
+            // Progress simulation with intervals
+            let currentProgress = 0;
+            const progressInterval = setInterval(() => {
+                currentProgress++;
+                if (currentProgress <= 3) {
+                    updateProgress(currentProgress);
+                }
+                if (currentProgress > 10) {
+                    clearInterval(progressInterval);
+                }
+            }, 2000);
 
             debugLog('Submitting request with data:', requestData);
 
@@ -247,24 +628,37 @@
             })
             .then(response => response.json())
             .then(data => {
-                debugLog('Received summary data', data);
-                if (data.error) {
-                    throw new Error(data.message || data.error);
-                }
+                clearInterval(progressInterval);
+                updateProgress(3);
                 
-                // Display the analysis (not summary)
-                const analysis = data.analysis || data.content || JSON.stringify(data);
-                document.getElementById('summaryContent').innerHTML = analysis.replace(/\n/g, '<br>');
-                document.querySelector('.result').style.display = 'block';
+                setTimeout(() => {
+                    debugLog('Received analysis data', data);
+                    if (data.error) {
+                        throw new Error(data.message || data.error);
+                    }
+                    
+                    // Display different components in their respective tabs
+                    const analysis = data.analysis || '';
+                    const emailDraft = data.emailDraft || '';
+                    const socialShare = data.socialShare || '';
+                    
+                    document.getElementById('analysisContent').innerHTML = analysis.replace(/\n/g, '<br>');
+                    document.getElementById('emailContent').innerHTML = emailDraft.replace(/\n/g, '<br>');
+                    document.getElementById('socialContent').innerHTML = socialShare.replace(/\n/g, '<br>');
+                    
+                    document.querySelector('.result').style.display = 'block';
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                }, 1000);
             })
             .catch(error => {
+                clearInterval(progressInterval);
                 debugLog('Error occurred', error);
                 document.querySelector('.error').style.display = 'block';
-                document.getElementById('errorText').textContent = error.message || 'An error occurred while generating the summary. Please try again.';
+                document.getElementById('errorText').textContent = error.message || 'An error occurred while generating the analysis. Please try again.';
+                document.getElementById('loadingIndicator').style.display = 'none';
             })
             .finally(() => {
                 document.getElementById('submitBtn').disabled = false;
-                document.querySelector('.loading').style.display = 'none';
             });
         }
 
