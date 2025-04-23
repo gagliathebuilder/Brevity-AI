@@ -22,6 +22,18 @@
             --transition: all 0.3s ease;
         }
 
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #0ea5e9;
+            --text: #f3f4f6;
+            --text-light: #9ca3af;
+            --bg: #111827;
+            --bg-card: #1f2937;
+            --border: #374151;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -178,6 +190,31 @@
             margin-right: 8px;
         }
 
+        .theme-toggle {
+            background-color: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 8px 16px;
+            font-size: 14px;
+            margin-top: 16px;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+        
+        .theme-toggle i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
         .loading {
             text-align: center;
             display: none;
@@ -253,6 +290,37 @@
             font-size: 14px;
             color: var(--text-light);
         }
+        
+        .progress-step.active .progress-step-number {
+            background-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+        
+        .progress-step.completed .progress-step-number {
+            background-color: var(--success);
+        }
+        
+        .progress-status {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: rgba(79, 70, 229, 0.05);
+            border-radius: var(--radius);
+            text-align: left;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .progress-status p {
+            display: flex;
+            align-items: center;
+            color: var(--text);
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .progress-status i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
 
         .error {
             color: var(--error);
@@ -297,6 +365,25 @@
         .result-content.active {
             display: block;
             animation: fadeIn 0.3s ease;
+        }
+        
+        .result-content h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 15px 0 10px;
+            color: var(--primary);
+        }
+        
+        .result-content ul {
+            margin: 10px 0 15px 20px;
+        }
+        
+        .result-content li {
+            margin-bottom: 8px;
+        }
+        
+        .result-content p {
+            margin-bottom: 12px;
         }
 
         .result-actions {
@@ -359,6 +446,57 @@
                 font-size: 12px;
             }
         }
+
+        .sample-links {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .sample-links h3 {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .content-samples {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .sample-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            width: 120px;
+            transition: var(--transition);
+        }
+        
+        .sample-card:hover {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .sample-card i {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .sample-card span {
+            font-size: 14px;
+            color: var(--text);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -370,6 +508,10 @@
                     <h1>BrevityIQ</h1>
                 </div>
                 <p class="subtitle">AI-powered content analysis and thematic summarization</p>
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-sun"></i>
+                    <span>Toggle theme</span>
+                </button>
             </header>
             
             <form id="summaryForm">
@@ -405,6 +547,28 @@
                     <i class="fas fa-magic"></i> Generate Analysis
                 </button>
             </form>
+            
+            <div class="sample-links">
+                <h3>Try with these examples</h3>
+                <div class="content-samples">
+                    <div class="sample-card" data-url="https://www.bbc.com/news">
+                        <i class="fas fa-newspaper"></i>
+                        <span>News Article</span>
+                    </div>
+                    <div class="sample-card" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                        <i class="fab fa-youtube"></i>
+                        <span>YouTube Video</span>
+                    </div>
+                    <div class="sample-card" data-url="https://podcasts.apple.com/us/podcast/why-these-salmon-are-on-anxiety-meds/id1482575855?i=1000704516678">
+                        <i class="fas fa-podcast"></i>
+                        <span>Apple Podcast</span>
+                    </div>
+                    <div class="sample-card" data-url="https://open.spotify.com/episode/0yzGnmLtGydUDZYgfY7Gq8">
+                        <i class="fab fa-spotify"></i>
+                        <span>Spotify Podcast</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="loading" id="loadingIndicator">
@@ -428,6 +592,10 @@
                     <div class="progress-step-number">4</div>
                     <div class="progress-step-label">Creating outputs</div>
                 </div>
+            </div>
+            
+            <div class="progress-status" id="progressStatus">
+                <p><i class="fas fa-info-circle"></i> <span id="statusMessage">Initiating content fetching...</span></p>
             </div>
         </div>
 
@@ -553,9 +721,10 @@
             });
             
         // Simulate progress in loading steps
-        function updateProgress(step) {
+        function updateProgress(step, message) {
             const steps = document.querySelectorAll('.progress-step');
             const loadingText = document.getElementById('loadingText');
+            const statusMessage = document.getElementById('statusMessage');
             
             steps.forEach((s, index) => {
                 if (index < step) {
@@ -576,6 +745,21 @@
             ];
             
             loadingText.textContent = loadingMessages[step];
+            if (message) {
+                statusMessage.textContent = message;
+            } else {
+                statusMessage.textContent = getDetailedStatusMessage(step);
+            }
+        }
+        
+        function getDetailedStatusMessage(step) {
+            const detailedMessages = [
+                'Connecting to source and retrieving content...',
+                'Cleaning and processing the content for analysis...',
+                'AI is identifying key themes and insights...',
+                'Formatting analysis and preparing email draft and social share...'
+            ];
+            return detailedMessages[step];
         }
 
         function handleSubmit(event) {
@@ -592,8 +776,23 @@
 
             if (inputType === 'url') {
                 requestData.url = urlInput.value;
+                
+                // Display a specific message for the content type
+                let contentTypeMessage = 'Fetching web content...';
+                const url = urlInput.value.toLowerCase();
+                
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    contentTypeMessage = 'Fetching YouTube transcript...';
+                } else if (url.includes('podcasts.apple.com')) {
+                    contentTypeMessage = 'Fetching Apple Podcast content...';
+                } else if (url.includes('spotify.com')) {
+                    contentTypeMessage = 'Fetching Spotify podcast content...';
+                }
+                
+                updateProgress(0, contentTypeMessage);
             } else {
                 requestData.content = contentInput.value;
+                updateProgress(0, 'Processing your provided content...');
             }
 
             // Show loading state
@@ -601,9 +800,6 @@
             document.getElementById('loadingIndicator').style.display = 'block';
             document.querySelector('.error').style.display = 'none';
             document.querySelector('.result').style.display = 'none';
-            
-            // Reset progress steps and start animation
-            updateProgress(0);
             
             // Progress simulation with intervals
             let currentProgress = 0;
@@ -663,6 +859,51 @@
         }
 
         document.getElementById('summaryForm').addEventListener('submit', handleSubmit);
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+        
+        // Check for saved theme preference or use the system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.querySelector('i').className = 'fas fa-moon';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update the icon
+            const themeIcon = themeToggle.querySelector('i');
+            themeIcon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        });
+        
+        // Sample content click handlers
+        document.querySelectorAll('.sample-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const url = card.getAttribute('data-url');
+                document.getElementById('url').value = url;
+                
+                // Ensure URL tab is active
+                document.querySelectorAll('.input-tab').forEach(t => t.classList.remove('active'));
+                document.querySelector('.input-tab[data-tab="url"]').classList.add('active');
+                
+                document.querySelectorAll('.input-content').forEach(content => content.classList.remove('active'));
+                document.getElementById('urlInput').classList.add('active');
+                
+                // Update the required attributes
+                document.getElementById('url').required = true;
+                document.getElementById('content').required = false;
+                
+                // Scroll to the form
+                document.getElementById('summaryForm').scrollIntoView({behavior: 'smooth'});
+            });
+        });
     </script>
 </body>
 </html> 
