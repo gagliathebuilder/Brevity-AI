@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrevityIQ Analyzer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8450FF;
+            --primary-hover: #7040EC;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #f9fafb;
+            --bg-light: #ffffff;
+            --bg-dark: #F5F5F7;
+            --border: #e5e7eb;
+            --error: #ef4444;
+            --success: #10b981;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --radius: 8px;
+            --transition: all 0.2s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary: #8450FF;
+            --primary-hover: #9670FF;
+            --text: #f3f4f6;
+            --text-light: #9ca3af;
+            --bg: #111827;
+            --bg-light: #1f2937;
+            --bg-dark: #18202E;
+            --border: #374151;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .content-tabs {
+            display: flex;
+            background-color: var(--bg-light);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .content-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .content-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background-color: rgba(132, 80, 255, 0.05);
+        }
+
+        .content-tab:hover:not(.active) {
+            background-color: var(--bg-dark);
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 14px 50px 14px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: var(--bg-light);
+            color: var(--text);
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(132, 80, 255, 0.2);
+        }
+
+        .paste-button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .feature-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: var(--bg-light);
+            border-radius: var(--radius);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+            margin-right: 12px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-label i {
+            margin-left: 8px;
+            color: #f97316;
+        }
+
+        .content-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 16px;
+            resize: vertical;
+            transition: var(--transition);
+            background-color: var(--bg-light);
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .content-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(132, 80, 255, 0.2);
+        }
+
+        .analyze-button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .analyze-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .loading {
+            display: none;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(132, 80, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            margin: 20px 0;
+            height: 6px;
+            background-color: rgba(132, 80, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .progress-step {
+            color: var(--text-light);
+            font-size: 14px;
+            position: relative;
+            text-align: center;
+            flex: 1;
+        }
+
+        .progress-step.active {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .results-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .results-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .results-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .results-content {
+            display: none;
+            padding: 20px;
+            background-color: var(--bg-light);
+            border-radius: var(--radius);
+        }
+
+        .results-content.active {
+            display: block;
+        }
+
+        .results-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            background-color: var(--bg-light);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-button:hover {
+            background-color: rgba(132, 80, 255, 0.1);
+        }
+
+        .error-message {
+            display: none;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            border-radius: var(--radius);
+            color: var(--error);
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 15px;
+            }
+            
+            .content-tabs {
+                flex-direction: column;
+            }
+            
+            .content-tab {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+        </button>
+        
+        <div class="app-header">
+            <h1 class="app-title">BrevityIQ Analyzer</h1>
+        </div>
+        
+        <div class="content-tabs">
+            <div class="content-tab active" data-tab="article">
+                <i class="fas fa-newspaper"></i> Article
+            </div>
+            <div class="content-tab" data-tab="video">
+                <i class="fas fa-video"></i> Video
+            </div>
+            <div class="content-tab" data-tab="podcast">
+                <i class="fas fa-podcast"></i> Podcast
+            </div>
+        </div>
+        
+        <div id="urlInput" class="input-container">
+            <input type="text" id="url" class="url-input" placeholder="Enter article URL..." required>
+            <button class="paste-button" id="pasteButton" aria-label="Paste from clipboard">
+                <i class="fas fa-paste"></i>
+            </button>
+        </div>
+        
+        <div class="feature-toggle">
+            <label class="toggle-switch">
+                <input type="checkbox" id="emojiToggle">
+                <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Enable Emoji Suggestions <i class="fas fa-fire"></i></span>
+            <span class="help-icon" id="helpIcon" style="margin-left: auto; cursor: pointer;">
+                <i class="fas fa-question-circle"></i>
+            </span>
+        </div>
+        
+        <div id="textareaContainer" style="display: none;">
+            <textarea id="content" class="content-textarea" placeholder="Or paste your article text here..."></textarea>
+        </div>
+        
+        <button type="button" id="analyzeButton" class="analyze-button">
+            <i class="fas fa-bolt"></i> Analyze content
+        </button>
+        
+        <div id="loadingIndicator" class="loading">
+            <div class="spinner"></div>
+            <p class="loading-text" id="loadingText">Analyzing content...</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="progress-steps">
+                <div class="progress-step" id="step1">Fetching</div>
+                <div class="progress-step" id="step2">Processing</div>
+                <div class="progress-step" id="step3">Analyzing</div>
+                <div class="progress-step" id="step4">Finalizing</div>
+            </div>
+        </div>
+        
+        <div id="errorMessage" class="error-message">
+            <p id="errorText">An error occurred while analyzing the content. Please try again.</p>
+        </div>
+        
+        <div id="resultsContainer" class="results-container">
+            <div class="results-tabs">
+                <div class="results-tab active" data-result="analysis">Thematic Analysis</div>
+                <div class="results-tab" data-result="email">Email Draft</div>
+                <div class="results-tab" data-result="social">Social Share</div>
+            </div>
+            
+            <div id="analysisContent" class="results-content active"></div>
+            <div id="emailContent" class="results-content"></div>
+            <div id="socialContent" class="results-content"></div>
+            
+            <div class="results-actions">
+                <button class="action-button" id="copyButton">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="action-button" id="downloadButton">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+        
+        // Check for saved theme preference or use the system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.querySelector('i').className = 'fas fa-sun';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update the icon
+            const themeIcon = themeToggle.querySelector('i');
+            themeIcon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        });
+        
+        // Help tooltip
+        document.getElementById('helpIcon').addEventListener('click', () => {
+            alert('Emoji Suggestions will automatically add relevant emojis to your social media posts based on the content analysis.');
+        });
+        
+        // Tab switching for content type
+        document.querySelectorAll('.content-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Toggle active tab
+                document.querySelectorAll('.content-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update placeholder based on content type
+                const tabType = tab.getAttribute('data-tab');
+                const urlInput = document.getElementById('url');
+                
+                if (tabType === 'article') {
+                    urlInput.placeholder = 'Enter article URL...';
+                } else if (tabType === 'video') {
+                    urlInput.placeholder = 'Enter YouTube or video URL...';
+                } else if (tabType === 'podcast') {
+                    urlInput.placeholder = 'Enter podcast URL (Spotify, Apple Podcasts)...';
+                }
+                
+                // Toggle textarea display for articles only
+                document.getElementById('textareaContainer').style.display = 
+                    tabType === 'article' ? 'block' : 'none';
+            });
+        });
+        
+        // Tab switching for results
+        document.querySelectorAll('.results-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Toggle active tab
+                document.querySelectorAll('.results-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Toggle active content
+                const resultType = tab.getAttribute('data-result');
+                document.querySelectorAll('.results-content').forEach(content => {
+                    content.classList.remove('active')
+                });
+                document.getElementById(resultType + 'Content').classList.add('active');
+            });
+        });
+        
+        // Paste from clipboard button
+        document.getElementById('pasteButton').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                const urlInput = document.getElementById('url');
+                
+                // Check if it looks like a URL
+                if (text.startsWith('http')) {
+                    urlInput.value = text;
+                } else {
+                    // If it's not a URL, put it in the textarea
+                    document.getElementById('content').value = text;
+                    document.getElementById('textareaContainer').style.display = 'block';
+                    urlInput.value = '';
+                }
+            } catch (err) {
+                console.error('Failed to read clipboard: ', err);
+                alert('Unable to access clipboard. Please paste manually.');
+            }
+        });
+        
+        // Copy button functionality
+        document.getElementById('copyButton').addEventListener('click', () => {
+            const activeResultTab = document.querySelector('.results-tab.active').getAttribute('data-result');
+            const contentToCopy = document.getElementById(activeResultTab + 'Content').innerText;
+            
+            navigator.clipboard.writeText(contentToCopy).then(() => {
+                const copyButton = document.getElementById('copyButton');
+                copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            });
+        });
+        
+        // Download button functionality
+        document.getElementById('downloadButton').addEventListener('click', () => {
+            const activeResultTab = document.querySelector('.results-tab.active').getAttribute('data-result');
+            const contentToDownload = document.getElementById(activeResultTab + 'Content').innerText;
+            const filename = `brevityiq-${activeResultTab}-${Date.now()}.txt`;
+            
+            const blob = new Blob([contentToDownload], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+        
+        // Simulate progress during analysis
+        function updateProgress(progress) {
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            
+            // Update active step
+            const steps = document.querySelectorAll('.progress-step');
+            steps.forEach((step, index) => {
+                const stepProgress = (index + 1) * 25;
+                if (progress >= stepProgress) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+        
+        // Handle the analyze button click
+        document.getElementById('analyzeButton').addEventListener('click', () => {
+            // Get input values
+            const url = document.getElementById('url').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const emojiEnabled = document.getElementById('emojiToggle').checked;
+            const contentType = document.querySelector('.content-tab.active').getAttribute('data-tab');
+            
+            // Validate input
+            if (!url && !content) {
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorText').textContent = 'Please enter a URL or paste content to analyze.';
+                return;
+            }
+            
+            // Prepare request data
+            const requestData = {
+                content_type: contentType
+            };
+            
+            if (url) {
+                requestData.url = url;
+            } else {
+                requestData.content = content;
+            }
+            
+            if (emojiEnabled) {
+                requestData.emoji_suggestions = true;
+            }
+            
+            // Show loading state
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('analyzeButton').disabled = true;
+            
+            // Animate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 5;
+                if (progress <= 90) {
+                    updateProgress(progress);
+                }
+            }, 500);
+            
+            // Send request to the server
+            fetch('/summaries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error(errorData.message || 'An error occurred');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                clearInterval(progressInterval);
+                updateProgress(100);
+                
+                setTimeout(() => {
+                    // Display results
+                    document.getElementById('analysisContent').innerHTML = data.analysis ? data.analysis.replace(/\n/g, '<br>') : '';
+                    document.getElementById('emailContent').innerHTML = data.emailDraft ? data.emailDraft.replace(/\n/g, '<br>') : '';
+                    document.getElementById('socialContent').innerHTML = data.socialShare ? data.socialShare.replace(/\n/g, '<br>') : '';
+                    
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    document.getElementById('resultsContainer').style.display = 'block';
+                    document.getElementById('analyzeButton').disabled = false;
+                }, 500);
+            })
+            .catch(error => {
+                clearInterval(progressInterval);
+                console.error('Error:', error);
+                
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorText').textContent = error.message || 'Failed to analyze content. Please try again.';
+                document.getElementById('analyzeButton').disabled = false;
+            });
+        });
+        
+        // Test server connection on page load
+        fetch('/health')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server health check successful', data);
+            })
+            .catch(error => {
+                console.error('Server health check failed', error);
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('errorText').textContent = 'Cannot connect to server. Please try again later.';
+            });
+    </script>
+</body>
+</html> 

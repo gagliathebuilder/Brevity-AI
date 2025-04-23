@@ -80,6 +80,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+// Serve the new UI for testing
+app.get('/new', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/new-index.html'));
+});
+
 // 404 handler
 app.use((req, res) => {
   console.log(`[${new Date().toISOString()}] 404 Not Found: ${req.method} ${req.url}`);
