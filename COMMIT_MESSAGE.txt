@@ -1,0 +1,10 @@
+feat(analysis): implement thematic analysis with enhanced error handling
+
+- Add structured thematic analysis with key points
+- Fix content extraction for web, YouTube, and podcast sources
+- Implement automatic email draft and social share generation
+- Add robust error handling for URL content fetching
+- Create test scripts for web and YouTube content analysis
+- Fix frontend-backend integration issues
+
+See COMMIT_NOTES.md for detailed explanation. 
